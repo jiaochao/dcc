@@ -1,5 +1,5 @@
-
-rm my.log*
+#!/bin/csh
+rm log.dcc/*
 rm master.addr
 
 python3 dcc.py master -n 2 -c master.addr &

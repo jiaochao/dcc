@@ -13,6 +13,7 @@ import subprocess
 import queue
 import time
 from datetime import datetime
+import pathlib
 
 # master/worker/client 
 # master -- coordinate work
@@ -504,10 +505,9 @@ class Client:
 def print_usage(msg):
   usage = '''
   usage: 
-  exe master -n <num_workers> -s <launch_script>    # run master with worker
-  exe worker -m <master_addr:port> -w <worker_id>   # run worker
-  exe client -m <master_addr:port> -r cmd       # run command
-  exe client -m <master_addr:port> -e           # exit
+  exe master -n <num_workers> -s <launch_script> -c <fname>    # run master with worker, fname used to write server addr
+  exe worker -m <master_addr:port> -c <fname> -w <worker_id>   # run worker ( only run in master )
+  exe client -m <master_addr:port> -c <fname> -r task          # run command, task can be 'exit', 'cmd gcc ...'
   '''
   print(usage)
   print(msg)
@@ -595,8 +595,11 @@ def parse_args():
   return ret
 
 if __name__ == '__main__':
-  print('running ...')
-  log.basicConfig(filename=f'my.log.{os.getpid()}', filemode='w', level=log.INFO)
+  log_dir = pathlib.Path('log.dcc')
+  if not log_dir.exists():
+    log_dir.mkdir()
+
+  log.basicConfig(filename=log_dir/f'my.log.{os.getpid()}', filemode='w', level=log.INFO)
   #log.basicConfig(filename=f'my.log.{os.getpid()}', filemode='w', level=log.DEBUG)
   #log.basicConfig(level=log.DEBUG)
   debug_print(f'CWD: {os.getcwd()}')
